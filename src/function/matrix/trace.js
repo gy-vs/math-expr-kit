@@ -31,7 +31,7 @@ export const createTrace = /* #__PURE__ */ factory(name, dependencies, ({ typed,
    *
    * @param {Array | Matrix} x  A matrix
    *
-   * @return {number} The trace of `x`
+   * @return {number | BigNumber | Complex | Fraction | Unit} The trace of `x`
    */
   return typed('trace', {
     Array: function _arrayTrace (x) {
@@ -67,11 +67,14 @@ export const createTrace = /* #__PURE__ */ factory(name, dependencies, ({ typed,
         const cols = size[1]
         if (rows === cols) {
           // calulate sum
-          let sum = 0
+          let sum
           // loop diagonal
-          for (let i = 0; i < rows; i++) { sum = add(sum, data[i][i]) }
+          for (let i = 0; i < rows; i++) {
+            const value = data[i][i]
+            sum = sum === undefined ? clone(value) : add(sum, value)
+          }
           // return trace
-          return sum
+          return sum === undefined ? 0 : sum
         } else {
           throw new RangeError('Matrix must be square (size: ' + format(size) + ')')
         }

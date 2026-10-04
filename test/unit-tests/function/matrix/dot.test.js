@@ -5,6 +5,7 @@ const dot = math.dot
 const matrix = math.matrix
 const sparse = math.sparse
 const complex = math.complex
+const unit = math.unit
 
 describe('dot', function () {
   it('should calculate dot product for two 1-dim arrays', function () {
@@ -89,5 +90,21 @@ describe('dot', function () {
 
     const v = matrix([2, I, 1])
     assert.deepStrictEqual(dot(v, v).sqrt(), complex(math.norm(v)))
+  })
+
+  it('should calculate dot product for vectors with units', function () {
+    assert.strictEqual(dot([unit('1 m'), unit('2 m')], [3, 4]).toString(), '11 m')
+    assert.strictEqual(dot([1, 2], [unit('3 m'), unit('4 m')]).toString(), '11 m')
+    assert.strictEqual(dot([unit('1 m'), unit('2 m')], [unit('3 m'), unit('4 m')]).toString(), '11 m^2')
+
+    assert.strictEqual(
+      math.sqrt(dot([unit('3 m'), unit('4 m')], [unit('3 m'), unit('4 m')])).toString(),
+      '5 m')
+
+    // matrix input and column vectors with units
+    assert.strictEqual(
+      dot(matrix([unit('1 m'), unit('2 m')]), matrix([unit('3 m'), unit('4 m')])).toString(),
+      '11 m^2')
+    assert.strictEqual(dot([[unit('1 m')], [unit('2 m')]], [[3], [4]]).toString(), '11 m')
   })
 })

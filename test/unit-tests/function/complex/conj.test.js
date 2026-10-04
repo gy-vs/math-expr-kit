@@ -35,9 +35,18 @@ describe('conj', function () {
       '[2 - 3i, 3 + 4i]')
   })
 
+  it('should return the value unchanged for a unit (units are real-valued)', function () {
+    assert.strictEqual(conj(math.unit('5 cm')).toString(), '5 cm')
+    assert.strictEqual(conj(math.unit('2 m')).toString(), '2 m')
+
+    assert.strictEqual(math.format(conj([math.unit('2 m'), math.unit('3 m')])), '[2 m, 3 m]')
+    assert.strictEqual(
+      conj(math.matrix([math.unit('2 m'), math.unit('3 m')])).toString(),
+      '[2 m, 3 m]')
+  })
+
   it('should throw an error when called with an unsupported type of argument', function () {
     assert.throws(function () { conj(new Date()) }, /TypeError: Unexpected type of argument/)
-    assert.throws(function () { conj(math.unit('5cm')) }, /TypeError: Unexpected type of argument/)
   })
 
   it('should throw an error in case of invalid number of arguments', function () {

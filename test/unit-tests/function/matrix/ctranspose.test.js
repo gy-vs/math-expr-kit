@@ -159,4 +159,13 @@ describe('ctranspose', function () {
     const expression = math.parse('ctranspose([[1+2i,3+4i],[5+6i,7+8i]])')
     assert.strictEqual(expression.toTex(), '\\left(\\begin{bmatrix}1+2~ i&3+4~ i\\\\5+6~ i&7+8~ i\\end{bmatrix}\\right)^H')
   })
+
+  it('should leave units unchanged (units are real-valued)', function () {
+    assert.strictEqual(ctranspose(math.unit('2 m')).toString(), '2 m')
+    assert.strictEqual(math.format(ctranspose([math.unit('1 N'), math.unit('2 N')])), '[1 N, 2 N]')
+
+    assert.deepStrictEqual(
+      ctranspose([[math.unit('1 m'), math.unit('2 m')], [math.unit('3 m'), math.unit('4 m')]]),
+      [[math.unit('1 m'), math.unit('3 m')], [math.unit('2 m'), math.unit('4 m')]])
+  })
 })

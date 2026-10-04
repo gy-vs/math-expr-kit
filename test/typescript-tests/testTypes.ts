@@ -733,6 +733,89 @@ Chaining examples
     MathJsChain<MathType>
   >()
 
+  // conj
+  expectTypeOf(math.conj(math.complex(2, 3))).toMatchTypeOf<Complex>()
+  expectTypeOf(math.conj(2)).toMatchTypeOf<number>()
+  expectTypeOf(math.conj(math.unit('2 m'))).toMatchTypeOf<Unit>()
+  expectTypeOf(math.conj([math.unit('2 m')])).toMatchTypeOf<
+    (string | MathNumericType | Unit)[]
+  >()
+  expectTypeOf(math.chain(math.unit('2 m')).conj()).toMatchTypeOf<
+    MathJsChain<Unit>
+  >()
+
+  // ctranspose
+  expectTypeOf(math.ctranspose(math.unit('2 m'))).toMatchTypeOf<Unit>()
+  expectTypeOf(
+    math.ctranspose([
+      [1, 2],
+      [3, 4]
+    ])
+  ).toMatchTypeOf<MathCollection>()
+  expectTypeOf(
+    math
+      .chain([
+        [math.unit('1 m'), math.unit('2 m')],
+        [math.unit('3 m'), math.unit('4 m')]
+      ])
+      .ctranspose()
+  ).toMatchTypeOf<MathJsChain<Unit[][]>>()
+
+  // dot
+  expectTypeOf(math.dot([1, 2], [3, 4])).toMatchTypeOf<MathNumericType>()
+  expectTypeOf(
+    math.dot([math.unit('1 m'), math.unit('2 m')], [3, 4])
+  ).toMatchTypeOf<Unit>()
+  expectTypeOf(
+    math.dot([1, 2], [math.unit('3 m'), math.unit('4 m')])
+  ).toMatchTypeOf<Unit>()
+  expectTypeOf(
+    math
+      .chain([math.unit('1 m'), math.unit('2 m')])
+      .dot([math.unit('3 m'), math.unit('4 m')])
+  ).toMatchTypeOf<MathJsChain<Unit>>()
+
+  // norm
+  expectTypeOf(math.norm(-5)).toMatchTypeOf<number | BigNumber>()
+  expectTypeOf(math.norm(math.unit('-5 m'))).toMatchTypeOf<Unit>()
+  expectTypeOf(
+    math.norm([math.unit('3 m'), math.unit('4 m')])
+  ).toMatchTypeOf<Unit>()
+  expectTypeOf(
+    math.norm(
+      [
+        [math.unit('1 m'), math.unit('2 m')],
+        [math.unit('3 m'), math.unit('4 m')]
+      ],
+      'fro'
+    )
+  ).toMatchTypeOf<Unit>()
+  expectTypeOf(math.chain(math.unit('-5 m')).norm()).toMatchTypeOf<
+    MathJsChain<Unit>
+  >()
+
+  // trace
+  expectTypeOf(
+    math.trace([
+      [1, 2],
+      [3, 4]
+    ])
+  ).toMatchTypeOf<MathNumericType>()
+  expectTypeOf(
+    math.trace([
+      [math.unit('1 m'), math.unit('2 m')],
+      [math.unit('3 m'), math.unit('4 m')]
+    ])
+  ).toMatchTypeOf<Unit>()
+  expectTypeOf(
+    math
+      .chain([
+        [math.unit('1 m'), math.unit('2 m')],
+        [math.unit('3 m'), math.unit('4 m')]
+      ])
+      .trace()
+  ).toMatchTypeOf<MathJsChain<Unit>>()
+
   // dotDivide
   expectTypeOf(math.chain(1).dotDivide(2)).toMatchTypeOf<
     MathJsChain<MathNumericType>

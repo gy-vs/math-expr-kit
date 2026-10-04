@@ -65,13 +65,13 @@ export const createNorm = /* #__PURE__ */ factory(
      *
      *    abs, hypot
      *
-     * @param  {number | BigNumber | Complex | Array | Matrix} x
+     * @param  {number | BigNumber | Complex | Unit | Array | Matrix} x
      *            Value for which to calculate the norm
      * @param  {number | BigNumber | string} [p=2]
      *            Vector space.
      *            Supported numbers include Infinity and -Infinity.
      *            Supported strings are: 'inf', '-inf', and 'fro' (The Frobenius norm)
-     * @return {number | BigNumber} the p-norm
+     * @return {number | BigNumber | Unit} the p-norm
      */
     return typed(name, {
       number: Math.abs,
@@ -88,6 +88,11 @@ export const createNorm = /* #__PURE__ */ factory(
       boolean: function (x) {
         // norm(x) = abs(x)
         return Math.abs(x)
+      },
+
+      Unit: function (x) {
+        // norm(x) = abs(x)
+        return abs(x)
       },
 
       Array: function (x) {
@@ -115,15 +120,15 @@ export const createNorm = /* #__PURE__ */ factory(
      */
     function _vectorNormPlusInfinity (x) {
       // norm(x, Infinity) = max(abs(x))
-      let pinf = 0
+      let pinf
       // skip zeros since abs(0) === 0
       x.forEach(function (value) {
         const v = abs(value)
-        if (larger(v, pinf)) {
+        if (pinf === undefined || larger(v, pinf)) {
           pinf = v
         }
       }, true)
-      return pinf
+      return pinf === undefined ? 0 : pinf
     }
 
     /**
@@ -167,11 +172,13 @@ export const createNorm = /* #__PURE__ */ factory(
         // check p != 0
         if (!equalScalar(p, 0)) {
           // norm(x, p) = sum(abs(xi) ^ p) ^ 1/p
-          let n = 0
+          let n
           // skip zeros since abs(0) === 0
           x.forEach(function (value) {
-            n = add(pow(abs(value), p), n)
+            const term = pow(abs(value), p)
+            n = n === undefined ? term : add(term, n)
           }, true)
+          if (n === undefined) return 0
           return pow(n, 1 / p)
         }
         return Number.POSITIVE_INFINITY
@@ -188,9 +195,10 @@ export const createNorm = /* #__PURE__ */ factory(
      */
     function _matrixNormFrobenius (x) {
       // norm(x) = sqrt(sum(diag(x'x)))
-      let fro = 0
+      let fro
       x.forEach(function (value, index) {
-        fro = add(fro, multiply(value, conj(value)))
+        const term = multiply(value, conj(value))
+        fro = fro === undefined ? term : add(fro, term)
       })
       return abs(sqrt(fro))
     }
@@ -205,17 +213,17 @@ export const createNorm = /* #__PURE__ */ factory(
       // norm(x) = the largest column sum
       const c = []
       // result
-      let maxc = 0
+      let maxc
       // skip zeros since abs(0) == 0
       x.forEach(function (value, index) {
         const j = index[1]
-        const cj = add(c[j] || 0, abs(value))
-        if (larger(cj, maxc)) {
-          maxc = cj
+        const absValue = abs(value)
+        c[j] = c[j] === undefined ? absValue : add(c[j], absValue)
+        if (maxc === undefined || larger(c[j], maxc)) {
+          maxc = c[j]
         }
-        c[j] = cj
       }, true)
-      return maxc
+      return maxc === undefined ? 0 : maxc
     }
 
     /**
@@ -247,17 +255,17 @@ export const createNorm = /* #__PURE__ */ factory(
       // norm(x) = the largest row sum
       const r = []
       // result
-      let maxr = 0
+      let maxr
       // skip zeros since abs(0) == 0
       x.forEach(function (value, index) {
         const i = index[0]
-        const ri = add(r[i] || 0, abs(value))
-        if (larger(ri, maxr)) {
-          maxr = ri
+        const absValue = abs(value)
+        r[i] = r[i] === undefined ? absValue : add(r[i], absValue)
+        if (maxr === undefined || larger(r[i], maxr)) {
+          maxr = r[i]
         }
-        r[i] = ri
       }, true)
-      return maxr
+      return maxr === undefined ? 0 : maxr
     }
 
     /**

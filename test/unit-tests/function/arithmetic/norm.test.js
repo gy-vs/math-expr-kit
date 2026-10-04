@@ -120,6 +120,53 @@ describe('norm', function () {
     })
   })
 
+  it('should calculate the norm of a scalar with a unit', function () {
+    assert.strictEqual(math.norm(math.unit('-5 m')).toString(), '5 m')
+    assert.strictEqual(math.norm(math.unit('2 cm')).toString(), '2 cm')
+  })
+
+  it('should calculate the norm of a vector with units', function () {
+    assert.strictEqual(math.norm([math.unit('3 m'), math.unit('4 m')]).toString(), '5 m')
+
+    assert.strictEqual(math.norm([math.unit('3 m'), math.unit('-4 m')], 1).toString(), '7 m')
+    assert.strictEqual(math.norm([math.unit('3 m'), math.unit('-4 m')], Infinity).toString(), '4 m')
+    assert.strictEqual(math.norm([math.unit('3 m'), math.unit('-4 m')], -Infinity).toString(), '3 m')
+    assert.strictEqual(math.norm([math.unit('3 m'), math.unit('-4 m')], 'fro').toString(), '5 m')
+    assert.strictEqual(math.norm([math.unit('3 m'), math.unit('-4 m')], 'inf').toString(), '4 m')
+    assert.strictEqual(math.norm([math.unit('3 m'), math.unit('-4 m')], '-inf').toString(), '3 m')
+
+    // Matrix input
+    assert.strictEqual(
+      math.norm(math.matrix([math.unit('3 m'), math.unit('4 m')])).toString(),
+      '5 m')
+
+    // all zero vector
+    assert.strictEqual(math.norm([math.unit('0 m'), math.unit('0 m')]).toString(), '0 m')
+    assert.strictEqual(
+      math.norm([math.unit('0 m'), math.unit('0 m')], Infinity).toString(),
+      '0 m')
+  })
+
+  it('should calculate the norm of a matrix with units', function () {
+    assert.strictEqual(
+      math.norm(
+        [[math.unit('1 m'), math.unit('2 m')], [math.unit('3 m'), math.unit('4 m')]],
+        'fro').toString(),
+      '5.477225575051661 m')
+
+    assert.strictEqual(
+      math.norm(
+        [[math.unit('1 m'), math.unit('-2 m')], [math.unit('3 m'), math.unit('4 m')]],
+        1).toString(),
+      '6 m')
+
+    assert.strictEqual(
+      math.norm(
+        [[math.unit('1 m'), math.unit('-2 m')], [math.unit('3 m'), math.unit('4 m')]],
+        Infinity).toString(),
+      '7 m')
+  })
+
   it('should LaTeX norm', function () {
     const expr1 = math.parse('norm(a)')
     const expr2 = math.parse('norm(a,2)')

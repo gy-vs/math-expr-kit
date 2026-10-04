@@ -26,7 +26,8 @@ export const createDot = /* #__PURE__ */ factory(name, dependencies, ({ typed, a
    *
    * @param  {Array | Matrix} x     First vector
    * @param  {Array | Matrix} y     Second vector
-   * @return {number}               Returns the dot product of `x` and `y`
+   * @return {number | BigNumber | Complex | Fraction | Unit}
+   *         Returns the dot product of `x` and `y`
    */
   return typed(name, {
     'Array | DenseMatrix, Array | DenseMatrix': _denseDot,

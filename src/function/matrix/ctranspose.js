@@ -23,8 +23,10 @@ export const createCtranspose = /* #__PURE__ */ factory(name, dependencies, ({ t
    *
    *     transpose, diag, inv, subset, squeeze
    *
-   * @param {Array | Matrix} x  Matrix to be ctransposed
-   * @return {Array | Matrix}   The ctransposed matrix
+   * @param {number | BigNumber | Complex | Unit | Array | Matrix} x
+   *     Matrix to be ctransposed
+   * @return {number | BigNumber | Complex | Unit | Array | Matrix}
+   *     The ctransposed matrix
    */
   return typed(name, {
     any: function (x) {

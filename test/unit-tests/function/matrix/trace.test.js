@@ -276,4 +276,14 @@ describe('trace', function () {
       assert.throws(function () { math.trace(m) })
     })
   })
+
+  it('should calculate the trace for a matrix with units', function () {
+    assert.strictEqual(
+      math.trace([[math.unit('1 m'), math.unit('2 m')], [math.unit('3 m'), math.unit('4 m')]])
+        .toString(),
+      '5 m')
+
+    const m = math.matrix([[math.unit('1 m'), math.unit('2 m')], [math.unit('3 m'), math.unit('4 m')]])
+    assert.strictEqual(math.trace(m).toString(), '5 m')
+  })
 })
