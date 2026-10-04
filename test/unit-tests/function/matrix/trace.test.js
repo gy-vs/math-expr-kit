@@ -185,6 +185,22 @@ describe('trace', function () {
     ]), bignumber(6))
   })
 
+  it('should calculate the trace of a matrix with units', function () {
+    const m = (x) => math.unit(x + ' m')
+
+    // 1x1
+    assert.strictEqual(math.trace([m('5')]).toString(), '5 m')
+
+    // 2x2
+    assert.strictEqual(math.trace([[m('1'), m('2')], [m('3'), m('4')]]).toString(), '5 m')
+
+    // DenseMatrix
+    assert.strictEqual(
+      math.trace(math.matrix([[m('1'), m('2')], [m('3'), m('4')]])).toString(),
+      '5 m'
+    )
+  })
+
   it('should not change the value of the initial matrix', function () {
     const m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     math.trace(m)
@@ -202,6 +218,10 @@ describe('trace', function () {
   it('should not accept arrays with dimensions higher than 2', function () {
     assert.throws(function () { math.trace([[[1]]]) }, RangeError)
     assert.throws(function () { math.trace(math.matrix([[[1]]])) }, RangeError)
+  })
+
+  it('should calculate the trace of a matrix with units through the expression parser', function () {
+    assert.strictEqual(math.format(math.evaluate('trace([1 m, 2 m; 3 m, 4 m])')), '5 m')
   })
 
   it('should LaTeX trace', function () {

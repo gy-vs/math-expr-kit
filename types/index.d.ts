@@ -1415,6 +1415,8 @@ export interface MathJsInstance extends MathJsFactory {
    * Frobenius norm) Default value: 2.
    * @returns the p-norm
    */
+  norm(x: Unit, p?: number | BigNumber | string): Unit
+  norm(x: MathCollection<Unit>, p?: number | BigNumber | string): Unit
   norm(
     x: number | BigNumber | Complex | MathCollection,
     p?: number | BigNumber | string
@@ -1666,7 +1668,7 @@ export interface MathJsInstance extends MathJsFactory {
    * @param x A complex number or array with complex numbers
    * @returns The complex conjugate of x
    */
-  conj<T extends number | BigNumber | Complex | MathCollection>(
+  conj<T extends number | BigNumber | Complex | Unit | MathCollection<MathScalarType>>(
     x: T
   ): NoLiteralType<T>
 
@@ -1867,7 +1869,10 @@ export interface MathJsInstance extends MathJsFactory {
    * @param y Second vector
    * @returns Returns the dot product of x and y
    */
-  dot(x: MathCollection, y: MathCollection): number
+  dot(x: MathCollection<Unit>, y: MathCollection<Unit>): Unit
+  dot(x: MathCollection, y: MathCollection<Unit>): Unit
+  dot(x: MathCollection<Unit>, y: MathCollection): Unit
+  dot(x: MathCollection, y: MathCollection): MathScalarType
 
   /**
    * Compute eigenvalues and eigenvectors of a matrix.
@@ -2278,7 +2283,8 @@ export interface MathJsInstance extends MathJsFactory {
    * @param x A matrix
    * @returns The trace of x
    */
-  trace(x: MathCollection): number
+  trace(x: MathCollection<Unit>): Unit
+  trace(x: MathCollection): MathScalarType
 
   /**
    * Transpose a matrix. All values of the matrix are reflected over its
@@ -5328,6 +5334,10 @@ export interface MathJsChain<TValue> {
    * Frobenius norm) Default value: 2.
    */
   norm(
+    this: MathJsChain<Unit | MathCollection<Unit>>,
+    p?: number | BigNumber | string
+  ): MathJsChain<Unit>
+  norm(
     this: MathJsChain<number | BigNumber | Complex | MathCollection>,
     p?: number | BigNumber | string
   ): MathJsChain<number | BigNumber>
@@ -5571,7 +5581,7 @@ export interface MathJsChain<TValue> {
    * complex conjugate of x is a - bi. For matrices, the function is
    * evaluated element wise.
    */
-  conj<T extends number | BigNumber | Complex | MathCollection>(
+  conj<T extends number | BigNumber | Complex | Unit | MathCollection<MathScalarType>>(
     this: MathJsChain<T>
   ): MathJsChain<NoLiteralType<T>>
 
@@ -5741,7 +5751,19 @@ export interface MathJsChain<TValue> {
    * B) = a1 * b1 + a2 * b2 + a3 * b3 + ... + an * bn
    * @param y Second vector
    */
-  dot(this: MathJsChain<MathCollection>, y: MathCollection): MathJsChain<number>
+  dot(
+    this: MathJsChain<MathCollection<Unit>>,
+    y: MathCollection<Unit>
+  ): MathJsChain<Unit>
+  dot(
+    this: MathJsChain<MathCollection>,
+    y: MathCollection<Unit>
+  ): MathJsChain<Unit>
+  dot(
+    this: MathJsChain<MathCollection<Unit>>,
+    y: MathCollection
+  ): MathJsChain<Unit>
+  dot(this: MathJsChain<MathCollection>, y: MathCollection): MathJsChain<MathScalarType>
 
   /**
    * Compute the matrix exponential, expm(A) = e^A. The matrix must be
@@ -5983,7 +6005,11 @@ export interface MathJsChain<TValue> {
    * diagonal of a square matrix.
    */
 
-  trace(this: MathJsChain<MathCollection>): MathJsChain<number>
+  trace(
+    this: MathJsChain<MathCollection<Unit>>
+  ): MathJsChain<Unit>
+
+  trace(this: MathJsChain<MathCollection>): MathJsChain<MathScalarType>
 
   /**
    * Transpose a matrix. All values of the matrix are reflected over its

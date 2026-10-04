@@ -151,6 +151,57 @@ Basic usage examples
 }
 
 /*
+Operations on vectors and matrices with units
+*/
+{
+  const math = create(all)
+
+  const unitVector: Unit[] = [math.unit('1 m'), math.unit('2 m')]
+  const unitMatrix: Unit[][] = [
+    [math.unit('1 m'), math.unit('2 m')],
+    [math.unit('3 m'), math.unit('4 m')]
+  ]
+  const numberVector = [3, 4]
+
+  // norm of a unit scalar keeps its unit
+  expectTypeOf(math.norm(math.unit('-5 m'))).toEqualTypeOf<Unit>()
+  expectTypeOf(math.norm(unitVector)).toEqualTypeOf<Unit>()
+  expectTypeOf(math.norm(unitVector, 1)).toEqualTypeOf<Unit>()
+  expectTypeOf(math.norm(unitMatrix, 'fro')).toEqualTypeOf<Unit>()
+
+  // conj accepts units and returns them unchanged (a unit is real valued)
+  expectTypeOf(math.conj(math.unit('2 m'))).toEqualTypeOf<Unit>()
+  expectTypeOf(math.conj(unitVector)).toEqualTypeOf<Unit[]>()
+  expectTypeOf(math.chain(math.unit('2 m')).conj().done()).toEqualTypeOf<Unit>()
+
+  // dot and trace of collections containing units return a scalar
+  expectTypeOf(math.dot(unitVector, unitVector)).toMatchTypeOf<MathScalarType>()
+  expectTypeOf(
+    math.dot(unitVector, numberVector)
+  ).toMatchTypeOf<MathScalarType>()
+  expectTypeOf(math.trace(unitMatrix)).toMatchTypeOf<MathScalarType>()
+
+  // chain variants
+  expectTypeOf(
+    math.chain(math.unit('-5 m')).norm().done()
+  ).toEqualTypeOf<Unit>()
+  expectTypeOf(
+    math.chain(unitVector).dot(unitVector).done()
+  ).toMatchTypeOf<MathScalarType>()
+  expectTypeOf(
+    math.chain(unitMatrix).trace().done()
+  ).toMatchTypeOf<MathScalarType>()
+
+  // scalar results can be used without an `as` cast
+  const length: MathScalarType = math.norm(unitVector)
+  const dotResult: MathScalarType = math.dot(unitVector, unitVector)
+  const traceResult: MathScalarType = math.trace(unitMatrix)
+  void length
+  void dotResult
+  void traceResult
+}
+
+/*
 Bignumbers examples
 */
 {

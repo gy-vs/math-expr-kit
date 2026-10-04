@@ -62,6 +62,29 @@ describe('dot', function () {
     assert.strictEqual(dot(sparse([7, 1, 2, 3]), sparse([2, 0, 0, 4])), 26)
   })
 
+  it('should calculate dot product of vectors containing units', function () {
+    assert.strictEqual(dot([math.unit('1 m'), math.unit('2 m')], [3, 4]).toString(), '11 m')
+    assert.strictEqual(dot([1, 2], [math.unit('3 m'), math.unit('4 m')]).toString(), '11 m')
+    assert.strictEqual(
+      dot([math.unit('1 m'), math.unit('2 m')], [math.unit('3 m'), math.unit('4 m')]).toString(),
+      '11 m^2'
+    )
+    assert.strictEqual(
+      math.sqrt(dot([math.unit('3 m'), math.unit('4 m')], [math.unit('3 m'), math.unit('4 m')])).toString(),
+      '5 m'
+    )
+    assert.strictEqual(
+      dot(matrix([math.unit('1 m'), math.unit('2 m')]), matrix([math.unit('3 m'), math.unit('4 m')])).toString(),
+      '11 m^2'
+    )
+  })
+
+  it('should calculate dot product of vectors with units through the expression parser', function () {
+    assert.strictEqual(math.format(math.evaluate('[1 m, 2 m] * [3, 4]')), '11 m')
+    assert.strictEqual(math.format(math.evaluate('dot([1 m, 2 m], [3 m, 4 m])')), '11 m^2')
+    assert.strictEqual(math.format(math.evaluate('sqrt(dot([3 m, 4 m], [3 m, 4 m]))')), '5 m')
+  })
+
   it('should throw an error for unsupported types of arguments', function () {
     assert.throws(function () { dot([2, 4, 1], 2) }, TypeError)
   })

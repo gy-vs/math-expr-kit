@@ -67,11 +67,14 @@ export const createTrace = /* #__PURE__ */ factory(name, dependencies, ({ typed,
         const cols = size[1]
         if (rows === cols) {
           // calulate sum
-          let sum = 0
+          let sum
           // loop diagonal
-          for (let i = 0; i < rows; i++) { sum = add(sum, data[i][i]) }
+          for (let i = 0; i < rows; i++) {
+            const value = data[i][i]
+            sum = sum === undefined ? clone(value) : add(sum, value)
+          }
           // return trace
-          return sum
+          return sum === undefined ? 0 : sum
         } else {
           throw new RangeError('Matrix must be square (size: ' + format(size) + ')')
         }
@@ -94,7 +97,7 @@ export const createTrace = /* #__PURE__ */ factory(name, dependencies, ({ typed,
     // matrix must be square
     if (rows === columns) {
       // calulate sum
-      let sum = 0
+      let sum
       // check we have data (avoid looping columns)
       if (values.length > 0) {
         // loop columns
@@ -109,7 +112,8 @@ export const createTrace = /* #__PURE__ */ factory(name, dependencies, ({ typed,
             // check row
             if (i === j) {
               // accumulate value
-              sum = add(sum, values[k])
+              const value = values[k]
+              sum = sum === undefined ? clone(value) : add(sum, value)
               // exit loop
               break
             }
@@ -121,7 +125,7 @@ export const createTrace = /* #__PURE__ */ factory(name, dependencies, ({ typed,
         }
       }
       // return trace
-      return sum
+      return sum === undefined ? 0 : sum
     }
     throw new RangeError('Matrix must be square (size: ' + format(size) + ')')
   }

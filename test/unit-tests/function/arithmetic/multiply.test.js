@@ -326,6 +326,19 @@ describe('multiply', function () {
       approxDeepEqual(multiply(matrix(a), matrix(b)), complex(70, -8))
     })
 
+    it('should multiply vectors containing units correctly (dot product)', function () {
+      assert.strictEqual(multiply([unit('1 m'), unit('2 m')], [3, 4]).toString(), '11 m')
+      assert.strictEqual(multiply([1, 2], [unit('3 m'), unit('4 m')]).toString(), '11 m')
+      assert.strictEqual(
+        multiply([unit('1 m'), unit('2 m')], [unit('3 m'), unit('4 m')]).toString(),
+        '11 m^2'
+      )
+      assert.strictEqual(
+        multiply(matrix([unit('1 m'), unit('2 m')]), matrix([3, 4])).toString(),
+        '11 m'
+      )
+    })
+
     it('should multiply row vector x column vector', function () {
       const v = [[1, 2, 3, 0, 0, 5, 6]]
 

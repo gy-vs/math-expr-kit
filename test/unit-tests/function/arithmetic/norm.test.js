@@ -91,6 +91,42 @@ describe('norm', function () {
     ], 2), 10), 0.2886751346)
   })
 
+  it('should return the norm of a scalar unit', function () {
+    assert.strictEqual(math.norm(math.unit('-5 m')).toString(), '5 m')
+    assert.strictEqual(math.norm(math.unit('3 cm')).toString(), '3 cm')
+  })
+
+  it('should return the norm of a vector with units', function () {
+    const m = (x) => math.unit(x + ' m')
+    // default p = 2
+    assert.strictEqual(math.norm([m('3'), m('4')]).toString(), '5 m')
+    assert.strictEqual(math.norm(math.matrix([m('3'), m('4')])).toString(), '5 m')
+    assert.strictEqual(math.norm([m('3'), m('-4')], 2).toString(), '5 m')
+    assert.strictEqual(math.norm([m('3'), m('-4')], 'fro').toString(), '5 m')
+    // p = 1
+    assert.strictEqual(math.norm([m('3'), m('-4')], 1).toString(), '7 m')
+    // p = Infinity
+    assert.strictEqual(math.norm([m('3'), m('-4')], Number.POSITIVE_INFINITY).toString(), '4 m')
+    assert.strictEqual(math.norm([m('3'), m('-4')], 'inf').toString(), '4 m')
+    // p = -Infinity
+    assert.strictEqual(math.norm([m('3'), m('-4')], Number.NEGATIVE_INFINITY).toString(), '3 m')
+    // units with a common base are converted to a common unit
+    assert.strictEqual(math.norm([math.unit('300 cm'), m('4')]).toNumber('m'), 5)
+  })
+
+  it('should return the norm of a matrix with units', function () {
+    const a = [[math.unit('1 m'), math.unit('-2 m')], [math.unit('3 m'), math.unit('4 m')]]
+    // p = 1: largest column sum
+    assert.strictEqual(math.norm(a, 1).toString(), '6 m')
+    assert.strictEqual(math.norm(math.matrix(a), 1).toString(), '6 m')
+    // p = Infinity: largest row sum
+    assert.strictEqual(math.norm(a, Number.POSITIVE_INFINITY).toString(), '7 m')
+    assert.strictEqual(math.norm(a, 'inf').toString(), '7 m')
+    // Frobenius norm
+    assert.strictEqual(math.norm(a, 'fro').toString(), math.sqrt(30) + ' m')
+    assert.strictEqual(math.norm(math.matrix(a), 'fro').toString(), math.sqrt(30) + ' m')
+  })
+
   it('should not fail in case of a zero matrix', function () {
     assert.strictEqual(math.norm([[0, 0, 0], [0, 0, 0], [0, 0, 0]], 'fro'), 0)
     assert.strictEqual(math.norm([[0, 0, 0], [0, 0, 0], [0, 0, 0]], 1), 0)
@@ -118,6 +154,16 @@ describe('norm', function () {
     assert.throws(function () {
       math.norm('a string')
     })
+  })
+
+  it('should calculate norms with units through the expression parser', function () {
+    assert.strictEqual(math.format(math.evaluate('norm([3 m, 4 m])')), '5 m')
+    assert.strictEqual(math.format(math.evaluate('norm([3 m, -4 m], 1)')), '7 m')
+    assert.strictEqual(math.format(math.evaluate('norm([3 m, -4 m], Infinity)')), '4 m')
+    assert.strictEqual(math.format(math.evaluate('norm([1 m, 2 m; 3 m, 4 m], "fro")')),
+      math.sqrt(30) + ' m')
+    assert.strictEqual(math.format(math.evaluate('norm([1 m, -2 m; 3 m, 4 m], 1)')), '6 m')
+    assert.strictEqual(math.format(math.evaluate('norm(-5 m)')), '5 m')
   })
 
   it('should LaTeX norm', function () {

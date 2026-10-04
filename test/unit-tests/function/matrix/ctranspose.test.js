@@ -13,6 +13,26 @@ describe('ctranspose', function () {
     assert.deepStrictEqual(ctranspose(math.complex(3, 4)), math.complex(3, -4))
   })
 
+  it('should leave a unit scalar unchanged since a unit is real valued', function () {
+    assert.strictEqual(ctranspose(math.unit('2 m')).toString(), '2 m')
+  })
+
+  it('should transpose (without conjugating) matrices with units through the expression parser', function () {
+    assert.strictEqual(
+      math.format(math.evaluate("[1 m, 2 m; 3 m, 4 m]'")),
+      '[[1 m, 3 m], [2 m, 4 m]]'
+    )
+    assert.strictEqual(math.format(math.evaluate('ctranspose([1 N, 2 N])')), '[1 N, 2 N]')
+  })
+
+  it('should transpose a vector with units (conjugation has no effect on real units)', function () {
+    assert.strictEqual(math.format(ctranspose([math.unit('1 N'), math.unit('2 N')])), '[1 N, 2 N]')
+    assert.deepStrictEqual(
+      ctranspose([[math.unit('1 m'), math.unit('2 m')], [math.unit('3 m'), math.unit('4 m')]]),
+      [[math.unit('1 m'), math.unit('3 m')], [math.unit('2 m'), math.unit('4 m')]]
+    )
+  })
+
   it('should transpose a vector', function () {
     assert.deepStrictEqual(ctranspose([1, 2, 3]), [1, 2, 3])
     assert.deepStrictEqual(ctranspose(math.matrix([1, 2, 3]).toArray()), [1, 2, 3])
